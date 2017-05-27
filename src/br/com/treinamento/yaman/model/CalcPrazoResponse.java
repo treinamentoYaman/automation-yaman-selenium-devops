@@ -1,14 +1,17 @@
 
 package br.com.treinamento.yaman.model;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 public class CalcPrazoResponse {
 
+    @SerializedName("xmlns")
+    @Expose
     private String xmlns;
+    @SerializedName("CalcPrazoResult")
+    @Expose
     private CalcPrazoResult calcPrazoResult;
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     public String getXmlns() {
         return xmlns;
@@ -24,14 +27,6 @@ public class CalcPrazoResponse {
 
     public void setCalcPrazoResult(CalcPrazoResult calcPrazoResult) {
         this.calcPrazoResult = calcPrazoResult;
-    }
-
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
     }
 
 }
