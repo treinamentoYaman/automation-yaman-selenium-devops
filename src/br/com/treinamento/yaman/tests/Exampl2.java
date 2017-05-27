@@ -25,7 +25,7 @@ import br.com.treinamento.yaman.constants.ViewConstants;
  * 
  * @author Gabriel Aguido Fraga<BR>
  */
-public class Example implements Serializable {
+public class Exampl2 implements Serializable {
 
 	private static final long serialVersionUID = 1722547517156957716L;
 
