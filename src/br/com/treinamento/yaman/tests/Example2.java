@@ -6,6 +6,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.PageFactory;
 
 import br.com.treinamento.yaman.helper.Utils;
 import br.com.treinamento.yaman.pageObjects.ExampleWelcome;
@@ -31,8 +32,7 @@ public class Example2 implements Serializable {
 	public void teste() throws Exception {
 
 		try {
-
-			ExampleWelcome paginaExample = new ExampleWelcome(driver);
+			ExampleWelcome paginaExample = PageFactory.initElements(driver, ExampleWelcome.class);
 			paginaExample.open("https://www.opiniaoburgerking.com.br/");
 
 		} catch (Exception e) {
