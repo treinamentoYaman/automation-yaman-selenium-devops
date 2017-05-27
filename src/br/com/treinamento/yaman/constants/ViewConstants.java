@@ -17,8 +17,9 @@ public class ViewConstants {
 		}
 
 		public static class ServicosProperties {
-
+			//url_servico_correios
 			public static final String URL_SERVICO_CALCPRAZO = "url_servico_calcprazo";
+			public static final String URL_SERVICO_CORREIOS = "url_servico_correios";
 			
 		}
 		
