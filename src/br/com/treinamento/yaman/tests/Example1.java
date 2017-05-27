@@ -43,8 +43,8 @@ public class Example1 implements Serializable {
 			paginaExample.open("https://www.google.com.br/");
 			paginaExample.getCampoPesquisa().clear();
 		    paginaExample.getCampoPesquisa().sendKeys("orkut");
-
-
+		    Thread.sleep(2000);
+		    
 		} catch (Exception e) {
 			fail("Aconteceu algum erro");
 		}
@@ -53,7 +53,6 @@ public class Example1 implements Serializable {
 	
 	@After
 	public void depois(){
-		
 		driver.quit();
 	}
 	
