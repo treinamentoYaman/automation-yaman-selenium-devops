@@ -7,17 +7,21 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.image.BufferedImage;
 import java.awt.image.RasterFormatException;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Inet4Address;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.exec.ExecuteException;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
@@ -30,11 +34,16 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
+import com.github.genium_framework.appium.support.server.AppiumServer;
+import com.github.genium_framework.server.ServerArguments;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import br.com.treinamento.yaman.constants.Constants;
 import br.com.treinamento.yaman.constants.ViewConstants;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.AndroidElement;
+import io.appium.java_client.remote.MobileCapabilityType;
 
 /**
  * @author Gabriel Fraga
@@ -304,6 +313,230 @@ public class Utils {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 		return gson.toJson(o);
+	}
+	
+	/**
+	 * 
+	 * Inmetrics<BR>
+	 *
+	 * Feature inicializa o driver do dispositivo Android<BR>
+	 *
+	 * @since 7 de jul de 2016 06:05:51
+	 * @author Gabriel Aguido Fraga<BR>
+	 */
+	public static AndroidDriver<AndroidElement> initializeAndroidDriver(String deviceName, String appPath) throws InterruptedException, IOException, URISyntaxException {
+
+		DesiredCapabilities caps = new DesiredCapabilities();
+		caps.setCapability(MobileCapabilityType.PLATFORM_VERSION, "6.0");
+		caps.setCapability(MobileCapabilityType.PLATFORM_NAME,"Android");
+		caps.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, 300);
+		
+		if (appPath == null) {
+			//caps.setCapability(MobileCapabilityType.APP, "Browser");
+			caps.setCapability(MobileCapabilityType.BROWSER_NAME, "Chrome");
+			caps.setCapability(MobileCapabilityType.APP_PACKAGE, "com.android.chrome");
+			caps.setCapability(MobileCapabilityType.APP_ACTIVITY, "com.google.android.apps.chrome.ChromeTabbedActivity");
+		} else {
+			caps.setCapability(MobileCapabilityType.APP, new File(appPath).getAbsolutePath());
+			caps.setCapability(MobileCapabilityType.APP_PACKAGE, Constants.pacote);
+			caps.setCapability(MobileCapabilityType.APP_ACTIVITY, Constants.classe);
+		}
+
+		if (deviceName == null){ 
+			caps.setCapability(MobileCapabilityType.DEVICE_NAME,"Emulator"); 
+		} else {
+			caps.setCapability(MobileCapabilityType.DEVICE_NAME, deviceName); 
+		}
+
+		if(verificarSeHaDispositivosAndroidAtivos()){
+			AndroidDriver<AndroidElement> driver = new AndroidDriver<AndroidElement>(new URL("http://127.0.0.1:4723/wd/hub"), caps);
+			driver.manage().timeouts().implicitlyWait(4, TimeUnit.MINUTES);
+			return driver;
+		} else {
+			Runtime.getRuntime().exec(carregarLinks().getProperty(ViewConstants.Commands.EMULATOR_PATH)+"emulator -netdelay none -netspeed full -avd Nexus_5X_API23");
+			System.out.println(aguardarDispositivoAndroidLigar());
+			AndroidDriver<AndroidElement> driver = new AndroidDriver<AndroidElement>(new URL("http://127.0.0.1:4723/wd/hub"), caps);
+			driver.manage().timeouts().implicitlyWait(4, TimeUnit.MINUTES);
+			return driver;
+		}
+
+	}
+
+
+	/**
+	 * 
+	 * Inmetrics<BR>
+	 *
+	 * Feature Aguarda o dispositivo ligar para tomada de qualquer decisão<BR>
+	 *
+	 * @since 7 de jul de 2016 06:06:20
+	 * @author Gabriel Aguido Fraga<BR>
+	 */
+	private static String aguardarDispositivoAndroidLigar() throws IOException, InterruptedException, URISyntaxException{
+
+		Process proc = Runtime.getRuntime().exec(carregarLinks().getProperty(ViewConstants.Commands.ADB_PATH)+"adb shell getprop init.svc.bootanim");
+
+		BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+		BufferedReader stdError = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+
+		try{
+			// read the output from the command
+			String s = "";
+			if (!(s = stdError.readLine()).contains("HUEHUE")) {
+				//enquanto não encontrar (nunca irá rs) a palavra 'HUEHUE', 
+				//re-executa o comando de verificar se esta ativo o dispositivo;
+				aguardarDispositivoAndroidLigar();
+			}
+
+		} catch(NullPointerException npe){
+			String s = "";
+			if (!(s = stdInput.readLine()).contains("stopped")) {
+				//Quando encontrar o resultado do comando 'stopped', é porque o
+				//dispositivo ja esta aberto e tudo está ok;
+				aguardarDispositivoAndroidLigar();
+			}
+		}
+
+		return "Dispositivo Carregado!";
+
+	}
+	
+	/**
+	 * Inmetrics<BR>
+	 *
+	 * Feature Faz a verificação se já existe algum dispositivo Android ativo para tomada de qualquer decisão<BR>
+	 *
+	 * @since 7 de jul de 2016 06:06:47
+	 * @author Gabriel Aguido Fraga<BR>
+	 */
+	public static boolean verificarSeHaDispositivosAndroidAtivos() throws IOException, URISyntaxException{
+
+		Process proc = Runtime.getRuntime().exec(carregarLinks().getProperty(ViewConstants.Commands.ADB_PATH)+"adb shell getprop init.svc.bootanim");
+		BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+
+		try{
+			String s = "";
+			if ((s = stdInput.readLine()).contains("stopped")) {
+				//Quando encontrar o resultado do comando 'stopped', é porque o
+				//dispositivo ja esta aberto e tudo está ok;
+				System.out.println("Rodando testes em dispositivo físico");
+				return true;
+			}
+		} catch (NullPointerException npe){
+			return false;
+		}
+
+		return false;
+	}
+
+
+	/**
+	 * 
+	 * Inmetrics<BR>
+	 *
+	 * Feature Inicializa o driver do iOS para a toma de qualquer decisão<BR>
+	 *
+	 * @since 7 de jul de 2016 06:07:34
+	 * @author Gabriel Aguido Fraga<BR>
+	 */
+	public static WebDriver initializeiOSDriver(String deviceName, String appPath) throws InterruptedException, IOException {
+		DesiredCapabilities caps = new DesiredCapabilities();
+		caps.setCapability(MobileCapabilityType.PLATFORM_NAME,"iOS");
+		caps.setCapability(MobileCapabilityType.PLATFORM_VERSION, "8.1");
+		if (deviceName == null)	caps.setCapability(MobileCapabilityType.DEVICE_NAME, "iPhone 6 Plus"); else caps.setCapability(MobileCapabilityType.DEVICE_NAME, deviceName);//nome do dispositivo
+		caps.setCapability(MobileCapabilityType.APP, appPath);
+		//caps.setCapability(MobileCapabilityType.UDID, "8ab872d5a64f6e7fdcc7b5dab6c4914cb4b05ccf");
+
+		Runtime.getRuntime().exec("open -a Simulator --args");
+
+		return new RemoteWebDriver(new URL("http://127.0.0.1:4723/wd/hub"), caps);
+	}
+
+	/**
+	 * 
+	 * Inmetrics<BR>
+	 *
+	 * Feature Inicializa o servidor Appium/Selenium para que possa ser executado os comandos mobile nos dispositivos<BR>
+	 *
+	 * @since 7 de jul de 2016 06:07:50
+	 * @author Gabriel Aguido Fraga<BR>
+	 */
+	public static AppiumServer initializeServer() throws ExecuteException, IOException, InterruptedException{
+
+		//stopServer();
+		ServerArguments serverArguments = new ServerArguments();
+		serverArguments.setArgument("--port", 4723);
+		serverArguments.setArgument("--local-timezone", true);
+		serverArguments.setArgument("--address", "127.0.0.1");
+		AppiumServer appiumServer = new AppiumServer(serverArguments);
+		appiumServer.startServer(60000);
+		return appiumServer;
+	}
+
+	/**
+	 * 
+	 * Inmetrics<BR>
+	 *
+	 * Feature Para o servidor Appium/Selenium<BR>
+	 *
+	 * @since 7 de jul de 2016 06:08:18
+	 * @author Gabriel Aguido Fraga<BR>
+	 */
+	public static void stopServer() throws IOException{
+
+		StringBuilder command = new StringBuilder();
+		command.append("cmd /c echo off")
+		.append(" & ")
+		.append("FOR /F \"usebackq tokens=5\" %p in (`netstat -nao ^| findstr /R /C:\"4723\"`) ")
+		.append("do (FOR /F \"usebackq\" %t in (`TASKLIST /FI \"PID eq %p\" ^| findstr /I node.exe`) ")
+		.append("do taskkill /F /PID %p)");
+
+		Runtime.getRuntime().exec(command.toString());
+
+	}
+	
+	public static void closeEmulator() throws FileNotFoundException, IOException, URISyntaxException{
+		Runtime.getRuntime().exec(carregarLinks().getProperty(ViewConstants.Commands.ADB_PATH)+"adb emu kill");
+	}
+
+	/**
+	 * 
+	 * Inmetrics<BR>
+	 *
+	 * Feature Devido a problemas de performance, via linha de comando, são executados inserções de dados<BR>
+	 *
+	 * @since 7 de jul de 2016 06:10:45
+	 * @author Gabriel Aguido Fraga<BR>
+	 */
+	public static void insertValueOnByADB(String value) throws IOException, InterruptedException, URISyntaxException {
+		Runtime.getRuntime().exec(carregarLinks().getProperty(ViewConstants.Commands.ADB_PATH)+"adb -s "+getDeviceName()+" shell input text "+value);
+	}
+	
+	/**
+	 * 
+	 * Inmetrics<BR>
+	 *
+	 * Feature Obtem o nome do dispositivo<BR>
+	 *
+	 * @since 7 de jul de 2016 06:11:26
+	 * @author Gabriel Aguido Fraga<BR>
+	 */
+	public static String getDeviceName() throws IOException, InterruptedException, URISyntaxException{
+
+		Process exec = Runtime.getRuntime().exec(carregarLinks().getProperty(ViewConstants.Commands.ADB_PATH)+"adb devices -l");
+		BufferedReader stdInput = new BufferedReader(new InputStreamReader(exec.getInputStream()));
+
+		String s = "";
+		while ((s = stdInput.readLine()) != null) {
+
+			if(s.contains("device ")){
+				String[] split = s.split("device ");
+				return split[0].trim();
+			}
+		}
+
+		Thread.sleep(2000);
+		return null;
 	}
 	
 }
