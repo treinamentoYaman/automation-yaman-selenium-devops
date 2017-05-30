@@ -8,17 +8,15 @@ import java.util.Properties;
 
 import javax.xml.transform.stream.StreamSource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import br.com.treinamento.yaman.constants.ConstantsServices;
+import br.com.treinamento.yaman.constants.ViewConstants;
 import br.com.treinamento.yaman.helper.LerArquivo;
 import br.com.treinamento.yaman.helper.SoapHelper;
 import br.com.treinamento.yaman.helper.Utils;
-import br.com.treinamento.yaman.constants.ConstantsServices;
-import br.com.treinamento.yaman.constants.ViewConstants;
 
 /**
  * Yaman<BR>

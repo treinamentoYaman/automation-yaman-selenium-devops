@@ -13,6 +13,9 @@ import java.awt.Toolkit;
  */
 public class Constants {
 
+	public static String pacote = "br.com.treinamento.yaman";
+	public static String classe = "br.com.treinamento.yaman.ui.splash.SplashActivity";
+
 	public static String configProperties = "./utilitarios/properties/config.properties";
 	public static String servicosProperties = "./utilitarios/properties/servicos.properties";
 	
