@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <soap:Body>
+    <CalcPrazoResponse xmlns="http://tempuri.org/">
+      <CalcPrazoResult>
+        <Servicos>
+          <cServico>
+            <Codigo>40010</Codigo>
+            <PrazoEntrega>1</PrazoEntrega>
+            <EntregaDomiciliar>S</EntregaDomiciliar>
+            <EntregaSabado>S</EntregaSabado>
+            <Erro/>
+            <MsgErro/>
+            <obsFim/>
+          </cServico>
+        </Servicos>
+      </CalcPrazoResult>
+    </CalcPrazoResponse>
+  </soap:Body>
+</soap:Envelope>
+
