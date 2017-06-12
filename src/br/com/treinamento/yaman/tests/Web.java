@@ -5,11 +5,17 @@ import java.io.Serializable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.internal.runners.statements.Fail;
 import org.openqa.selenium.WebDriver;
+
+import org.junit.*;
+import static org.junit.Assert.*;
+
 import org.openqa.selenium.support.PageFactory;
 
+
 import br.com.treinamento.yaman.helper.Utils;
-import br.com.treinamento.yaman.pageObjects.ExampleWelcome;
+import br.com.treinamento.yaman.pageObjects.GooglePage;
 
 /**
  * Yaman<BR>
@@ -32,18 +38,21 @@ public class Web implements Serializable {
 	public void teste() throws Exception {
 
 		try {
-			ExampleWelcome paginaExample = PageFactory.initElements(driver, ExampleWelcome.class);
-			paginaExample.open("https://www.opiniaoburgerking.com.br/");
 
+			GooglePage paginaExample = PageFactory.initElements(driver, GooglePage.class);			
+			paginaExample.open("https://www.google.com.br/");
+			paginaExample.getCampoPesquisa().clear();
+		    paginaExample.getCampoPesquisa().sendKeys("orkut");
+		    Thread.sleep(2000);
+		    
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			fail("Aconteceu algum erro");
 		}
 
 	}
 	
 	@After
 	public void depois(){
-		
 		driver.quit();
 	}
 	
