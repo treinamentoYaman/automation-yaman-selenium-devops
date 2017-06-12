@@ -1,80 +1,63 @@
 package br.com.treinamento.yaman.tests;
 
-import java.io.Serializable;
-import java.io.StringReader;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.xml.transform.stream.StreamSource;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import br.com.treinamento.yaman.constants.ConstantsServices;
+import com.google.gson.Gson;
+
 import br.com.treinamento.yaman.constants.ViewConstants;
-import br.com.treinamento.yaman.helper.LerArquivo;
-import br.com.treinamento.yaman.helper.SoapHelper;
 import br.com.treinamento.yaman.helper.Utils;
+import br.com.treinamento.yaman.model.Endereco;
 
-/**
- * Yaman<BR>
- * 
- * @author Gabriel Aguido Fraga<BR>
- */
-public class Rest implements Serializable {
+public class Rest {
 
-	private static final long serialVersionUID = 1722547517156957716L;
-
-	private Map<String, String> valoresMassa = new HashMap<String, String>();
-	public Properties urlsServicos = null;
-	public Properties links = null;
-	String ENDPOINT = null;
-	String request = null;
-	String response = null;
-
+	private String url;
+	private String resposta = "";
+	private String cep = "06220090";
+	private Endereco e;
+	
 	@Before
-	public void antes(){
-		
+	public void antes() throws FileNotFoundException, IOException, URISyntaxException{
+		url = Utils.carregarUrlsServicos().getProperty(ViewConstants.Properties.ServicosProperties.URL_SERVICO_CORREIOS);
 	}
 	
 	@Test
-	public void teste() throws Exception {
-
-		try {
-
-			StringBuilder sb = new LerArquivo()
-					.lerArquivo(Utils.carregarLinks().getProperty(ViewConstants.Properties.LAYOUTS_PATH)
-							+ this.getClass().getSimpleName() + ViewConstants.Properties.XML_EXTENSION);
-
-			String template = sb.toString();
-
-			valoresMassa.put(ConstantsServices.CD_SERVICO_LABEL, ConstantsServices.CD_SERVICO);
-			valoresMassa.put(ConstantsServices.CEP_ORIGEM_LABEL, ConstantsServices.CEP_ORIGEM);
-			valoresMassa.put(ConstantsServices.CEP_DESTINO_LABEL, ConstantsServices.CEP_DESTINO);
-
-			String content = SoapHelper.mergeTemplate(template, valoresMassa);
-			request = SoapHelper.format(content);
-
-			urlsServicos = Utils.carregarUrlsServicos();
-
-			ENDPOINT = urlsServicos.getProperty(ViewConstants.Properties.ServicosProperties.URL_SERVICO_CALCPRAZO);
-
-			response = SoapHelper.executarTransacao(new StreamSource(new StringReader(SoapHelper.format(request))),
-					ENDPOINT, true, ConstantsServices.SOAPACTION_CALCPRAZO, this.getClass().getSimpleName());
-
-			System.out.println(response);
-			
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
+	public void teste() throws MalformedURLException, IOException {
+		url += cep;
+		
+		HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
+		con.setRequestMethod("GET");
+		
+		BufferedReader br = new BufferedReader (new InputStreamReader(con.getInputStream()));
+        
+		String inputLine;
+        
+		while((inputLine = br.readLine()) != null){
+			resposta += inputLine + "\n";
 		}
-
+		
+		e = new Gson().fromJson(resposta, Endereco.class);
+		
+		Assert.assertEquals(cep, e.getCep());
+		
 	}
 	
 	@After
 	public void depois(){
-		
+		System.out.println("Resposta do servidor: " + resposta);
+		System.out.println("Valor esperado: " + cep + "\nValor de resposta: " + e.getCep());
 	}
 	
 }
