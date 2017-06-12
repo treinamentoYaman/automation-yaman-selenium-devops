@@ -8,15 +8,21 @@ import java.util.Properties;
 
 import javax.xml.transform.stream.StreamSource;
 
+import org.json.JSONObject;
+import org.json.XML;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.google.gson.Gson;
 
 import br.com.treinamento.yaman.constants.ConstantsServices;
 import br.com.treinamento.yaman.constants.ViewConstants;
 import br.com.treinamento.yaman.helper.LerArquivo;
 import br.com.treinamento.yaman.helper.SoapHelper;
 import br.com.treinamento.yaman.helper.Utils;
+import br.com.treinamento.yaman.model.Result;
 
 /**
  * Yaman<BR>
@@ -33,6 +39,7 @@ public class Soap implements Serializable {
 	String ENDPOINT = null;
 	String request = null;
 	String response = null;
+	String prazoEntrega = "1";
 
 	@Before
 	public void antes(){
@@ -65,6 +72,15 @@ public class Soap implements Serializable {
 					ENDPOINT, true, ConstantsServices.SOAPACTION_CALCPRAZO, this.getClass().getSimpleName());
 
 			System.out.println(response);
+			
+			JSONObject json = XML.toJSONObject(response);
+
+			System.out.println(json.toString());
+
+			Result r = new Gson().fromJson(json.toString(), Result.class);
+
+			Assert.assertEquals(prazoEntrega, r.getSoapEnvelope().getSoapBody().getCalcPrazoResponse().getCalcPrazoResult()
+					.getServicos().getCServico().getPrazoEntrega().toString());
 			
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
