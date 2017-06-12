@@ -16,7 +16,7 @@ import br.com.treinamento.yaman.pageObjects.ExampleWelcome;
  * 
  * @author Gabriel Aguido Fraga<BR>
  */
-public class Example2 implements Serializable {
+public class Web implements Serializable {
 
 	private static final long serialVersionUID = -525004464331578037L;
 	private WebDriver driver;

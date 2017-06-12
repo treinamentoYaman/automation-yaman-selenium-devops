@@ -23,7 +23,7 @@ import br.com.treinamento.yaman.helper.Utils;
  * 
  * @author Gabriel Aguido Fraga<BR>
  */
-public class Example implements Serializable {
+public class Rest implements Serializable {
 
 	private static final long serialVersionUID = 1722547517156957716L;
 
