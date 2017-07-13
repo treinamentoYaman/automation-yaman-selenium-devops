@@ -4,7 +4,7 @@ package br.com.treinamento.yaman.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Result {
+public class Calculation {
 
     @SerializedName("soap:Envelope")
     @Expose

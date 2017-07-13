@@ -11,7 +11,7 @@ public class CServico {
     private String msgErro;
     @SerializedName("Codigo")
     @Expose
-    private Integer codigo;
+    private int codigo;
     @SerializedName("EntregaSabado")
     @Expose
     private String entregaSabado;
@@ -23,7 +23,7 @@ public class CServico {
     private String entregaDomiciliar;
     @SerializedName("PrazoEntrega")
     @Expose
-    private Integer prazoEntrega;
+    private int prazoEntrega;
     @SerializedName("obsFim")
     @Expose
     private String obsFim;
@@ -36,11 +36,11 @@ public class CServico {
         this.msgErro = msgErro;
     }
 
-    public Integer getCodigo() {
+    public int getCodigo() {
         return codigo;
     }
 
-    public void setCodigo(Integer codigo) {
+    public void setCodigo(int codigo) {
         this.codigo = codigo;
     }
 
@@ -68,11 +68,11 @@ public class CServico {
         this.entregaDomiciliar = entregaDomiciliar;
     }
 
-    public Integer getPrazoEntrega() {
+    public int getPrazoEntrega() {
         return prazoEntrega;
     }
 
-    public void setPrazoEntrega(Integer prazoEntrega) {
+    public void setPrazoEntrega(int prazoEntrega) {
         this.prazoEntrega = prazoEntrega;
     }
 

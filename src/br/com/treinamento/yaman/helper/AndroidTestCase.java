@@ -60,13 +60,13 @@ public class AndroidTestCase{
 	public void setUp() throws Exception {
 
 		Utils.initializeServer();
-		driver = Utils.initializeAndroidDriver(null, links.getProperty(ViewConstants.Properties.APP_PATH));
+		driver = Utils.initializeAndroidDriver(null, null);
 		
 	}
 	
 	/**
 	 * 	
-	 * Inmetrics<BR>
+	 * Yaman<BR>
 	 *
 	 * Feature PrintScreen de dispositivos Android<BR>
 	 *
@@ -160,10 +160,9 @@ public class AndroidTestCase{
 	@After
 	public void quit() throws IOException {
 		
-		Runtime.getRuntime().exec("taskkill /F /IM node.exe");
-		appiumServer.stopServer();
+		//Runtime.getRuntime().exec("taskkill /F /IM node.exe");
 		//se houver emuladores, é finalizado
-		Runtime.getRuntime().exec(links.getProperty(ViewConstants.Commands.ADB_PATH)+"adb emu kill");
+		//Runtime.getRuntime().exec(links.getProperty(ViewConstants.Commands.ADB_PATH)+"adb emu kill");
 	}
 
 	/**

@@ -23,41 +23,46 @@ import br.com.treinamento.yaman.model.Endereco;
 
 public class Rest {
 
-	private String url;
-	private String resposta = "";
+	private String endpoint;
 	private String cep = "06220090";
+	private String response = "";
 	private Endereco e;
-	
+
 	@Before
 	public void antes() throws FileNotFoundException, IOException, URISyntaxException{
-		url = Utils.carregarUrlsServicos().getProperty(ViewConstants.Properties.ServicosProperties.URL_SERVICO_CORREIOS);
+		
+		endpoint = Utils.carregarUrlsServicos().getProperty(ViewConstants.Properties.ServicosProperties.URL_SERVICO_CORREIOS);
+		endpoint += cep;
+		
 	}
 	
 	@Test
-	public void teste() throws MalformedURLException, IOException {
-		url += cep;
+	public void teste() throws IOException{
 		
-		HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
+		HttpURLConnection con = (HttpURLConnection) new URL(endpoint).openConnection();
 		con.setRequestMethod("GET");
 		
-		BufferedReader br = new BufferedReader (new InputStreamReader(con.getInputStream()));
-        
-		String inputLine;
-        
-		while((inputLine = br.readLine()) != null){
-			resposta += inputLine + "\n";
+		BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
+		
+		String linha = "";
+		while((linha = br.readLine()) != null){
+			response += linha;
 		}
+       
+		System.out.println(response);
 		
-		e = new Gson().fromJson(resposta, Endereco.class);
+		e = new Gson().fromJson(response, Endereco.class);
 		
-		Assert.assertEquals(cep, e.getCep());
+		Assert.assertTrue(e.getCep().equals(cep));
 		
 	}
 	
 	@After
 	public void depois(){
-		System.out.println("Resposta do servidor: " + resposta);
-		System.out.println("Valor esperado: " + cep + "\nValor de resposta: " + e.getCep());
+		
+		System.out.println("Resultado esperado: " + cep);
+		System.out.println("Resultado obtido: " + e.getCep());
+		
 	}
 	
 }

@@ -3,29 +3,33 @@ package br.com.treinamento.yaman.tests;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.openqa.selenium.By;
 
-public class Mobile {
+import br.com.treinamento.yaman.helper.AndroidTestCase;
+
+public class Mobile extends AndroidTestCase {
 
 	@Before
 	public void antes(){
+
+		
 		
 	}
-	
+
 	@Test
 	public void teste(){
+
+		driver.findElement(By.id("digit_8")).click();
+		driver.findElement(By.id("op_add")).click();
+		driver.findElement(By.id("digit_8")).click();
 		
-//		if(new LoginAndroid().verificarPrimeiroAcesso()){
-//			new LoginAndroid().efetuarLoginPrimeiroAcesso(c);
-//			if(!new LoginAndroid().verificarDispositivoAtivado()){ //não ativo
-//				new LoginAndroid().ativarDispositivo(c);
-//			}
-//		} else {
-//			new LoginAndroid().efetuarLogin(c);
-//		}
+		
 	}
-	
+
 	@After
 	public void depois(){
+		
+		driver.closeApp();
 		
 	}	
 	

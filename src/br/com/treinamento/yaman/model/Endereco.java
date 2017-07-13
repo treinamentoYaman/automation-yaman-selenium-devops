@@ -1,3 +1,4 @@
+
 package br.com.treinamento.yaman.model;
 
 import java.util.HashMap;
